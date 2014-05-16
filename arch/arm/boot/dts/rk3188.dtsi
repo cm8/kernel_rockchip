@@ -282,7 +282,8 @@
 	    	pinctrl-names = "default","suspend";
 	    	pinctrl-0 = <&sd0_clk &sd0_cmd &sd0_cd &sd0_wp &sd0_pwr &sd0_bus1 &sd0_bus4>;
 	    	pinctrl-1 = <&sd0_cd_gpio>; //for int gpio?
-	    	clocks = <&clk_gates2 11>;
+		clocks = <&clk_gates2 11>, <&clk_gates5 10>;
+		clock-names = "clk_mmc", "hclk_mmc";
    	    	num-slots = <1>; 
    
 	    	fifo-depth = <0x100>;
