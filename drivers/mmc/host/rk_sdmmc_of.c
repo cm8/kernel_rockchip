@@ -56,7 +56,7 @@ void rockchip_mmc_of_probe(struct device_node *np,struct rk_sdmmc_of *rk_mmc_pro
     return ;
 
 }
-EXPORT_SYSMBOL(rockchip_mmc_of_probe);
+EXPORT_SYMBOL(rockchip_mmc_of_probe);
 #endif /*DW_MMC_OF_PROBE*/
 
 
