@@ -21,7 +21,7 @@
 #define DRIVER_NAME "rk_sdmmc"
 #define DRIVER_PREFIX DRIVER_NAME ": "
 #define DRIVER_VER  "Dw-mci-rockchip"
-#define DW_MMC_OF_PROBE 0
+#define DW_MMC_OF_PROBE 1
 
 enum MMC_DBG_MASK{
      MMC_DBG_NONE = 0,
