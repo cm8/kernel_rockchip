@@ -69,6 +69,14 @@
 	};
 };
 
+&emmc {
+	status = "disabled";
+};
+
+&sdio {
+	status = "disabled";
+};
+
 &uart0 {
 	status = "okay";
 	dma-names = "!tx", "!rx";
