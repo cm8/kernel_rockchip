@@ -2198,4 +2198,13 @@ int usb_gadget_unregister_driver(struct usb_gadget_driver *_driver)
 }
 EXPORT_SYMBOL(usb_gadget_unregister_driver);
 #endif
+
+#else
+
+int dwc_vbus_status( void )
+{
+    return 0;
+}
+EXPORT_SYMBOL(dwc_vbus_status);
+
 #endif /* DWC_HOST_ONLY */
