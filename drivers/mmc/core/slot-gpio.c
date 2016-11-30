@@ -21,6 +21,7 @@ struct mmc_gpio {
 	int ro_gpio;
 	int cd_gpio;
 	char *ro_label;
+	irqreturn_t (*cd_gpio_isr)(int irq, void *dev_id);
 	char cd_label[0];
 };
 
@@ -130,6 +131,42 @@ int mmc_gpio_request_ro(struct mmc_host *host, unsigned int gpio)
 	return 0;
 }
 EXPORT_SYMBOL(mmc_gpio_request_ro);
+
+void mmc_gpiod_request_cd_irq(struct mmc_host *host)
+{
+	struct mmc_gpio *ctx = host->slot.handler_priv;
+	int ret, irq;
+
+	if (host->slot.cd_irq >= 0 || !ctx || !ctx->cd_gpio)
+		return;
+
+	irq = gpio_to_irq(desc_to_gpio((struct gpio_desc*)ctx->cd_gpio));
+
+	/*
+	 * Even if gpiod_to_irq() returns a valid IRQ number, the platform might
+	 * still prefer to poll, e.g., because that IRQ number is already used
+	 * by another unit and cannot be shared.
+	 */
+	if (irq >= 0 && host->caps & MMC_CAP_NEEDS_POLL)
+		irq = -EINVAL;
+
+	if (irq >= 0) {
+		if (!ctx->cd_gpio_isr)
+			ctx->cd_gpio_isr = mmc_gpio_cd_irqt;
+		ret = devm_request_threaded_irq(host->parent, irq,
+			NULL, ctx->cd_gpio_isr,
+			IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+			ctx->cd_label, host);
+		if (ret < 0)
+			irq = ret;
+	}
+
+	host->slot.cd_irq = irq;
+
+	if (irq < 0)
+		host->caps |= MMC_CAP_NEEDS_POLL;
+}
+EXPORT_SYMBOL(mmc_gpiod_request_cd_irq);
 
 /**
  * mmc_gpio_request_cd - request a gpio for card-detection

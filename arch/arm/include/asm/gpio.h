@@ -29,4 +29,7 @@
 #define gpio_to_irq	__gpio_to_irq
 #endif
 
+extern struct gpio_desc *gpio_to_desc(unsigned gpio);
+extern int desc_to_gpio(const struct gpio_desc *desc);
+
 #endif /* _ARCH_ARM_GPIO_H */

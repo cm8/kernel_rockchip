@@ -16,6 +16,10 @@
 #include "cat66121_hdmi.h"
 #include "cat66121_hdmi_hw.h"
 
+#define GPIO_LOW 0
+#define GPIO_HIGH 1
+#define INVALID_GPIO -1
+
 #define HDMI_POLL_MDELAY 	50//100
 struct cat66121_hdmi_pdata *cat66121_hdmi = NULL;
 struct hdmi *hdmi=NULL;

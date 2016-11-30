@@ -67,26 +67,39 @@
 		pmu_regulator = "act_ldo5";
 		pmu_enable_level = <1>; //1->HIGH, 0->LOW
 	};
+
+	vcc_sd0: sdmmc-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "sdmmc-supply";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		gpio = <&gpio3 1 GPIO_ACTIVE_LOW>;
+		startup-delay-us = <100000>;
+		vin-supply = <&dcdc4_reg>;
+	};
 };
 
 &emmc {
 	status = "disabled";
 };
 
-&sdmmc {
+&mmc0 {
 	clock-frequency = <50000000>;
+	max-frequency = <50000000>;
 
-	supports-highspeed;
-	supports-sd;
-	broken-cd;
-	card-detect-delay = <200>;
-
-	pwr-gpios = <&gpio3 GPIO_A1 GPIO_ACTIVE_LOW>;
-
+	num-slots = <1>;
 	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&sd0_clk>, <&sd0_cmd>, <&sd0_cd>, <&sd0_bus4>;
+	vmmc-supply = <&vcc_sd0>;
+
+	bus-width = <4>;
+	cap-mmc-highspeed;
+	cap-sd-highspeed;
+	disable-wp;
 };
 
-&sdio {
+&mmc1 {
 	status = "disabled";
 };
 

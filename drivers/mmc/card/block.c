@@ -648,16 +648,25 @@ static inline int mmc_blk_part_switch(struct mmc_card *card,
 	if (mmc_card_mmc(card)) {
 		u8 part_config = card->ext_csd.part_config;
 
+		if (md->part_type == EXT_CSD_PART_CONFIG_ACC_RPMB)
+			mmc_retune_pause(card->host);
+
 		part_config &= ~EXT_CSD_PART_CONFIG_ACC_MASK;
 		part_config |= md->part_type;
 
 		ret = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
 				 EXT_CSD_PART_CONFIG, part_config,
 				 card->ext_csd.part_time);
-		if (ret)
+		if (ret) {
+			if (md->part_type == EXT_CSD_PART_CONFIG_ACC_RPMB)
+				mmc_retune_unpause(card->host);
 			return ret;
+		}
 
 		card->ext_csd.part_config = part_config;
+
+		if (main_md->part_curr == EXT_CSD_PART_CONFIG_ACC_RPMB)
+			mmc_retune_unpause(card->host);
 	}
 
 	main_md->part_curr = md->part_type;
@@ -831,6 +840,9 @@ static int mmc_blk_cmd_recovery(struct mmc_card *card, struct request *req,
 		err = get_card_status(card, &status, 0);
 		if (!err)
 			break;
+
+		/* Re-tune if needed */
+		mmc_retune_recheck(card->host);
 
 		prev_cmd_status_valid = false;
 		pr_err("%s: error %d sending status command, %sing\n",
@@ -2379,10 +2391,6 @@ static const struct mmc_fixup blk_fixups[] =
 	END_FIXUP
 };
 
-#if defined(CONFIG_MMC_DW_ROCKCHIP)
-extern struct mmc_card *this_card;
-#endif
-
 static int mmc_blk_probe(struct mmc_card *card)
 {
 	struct mmc_blk_data *md, *part_md;
@@ -2415,7 +2423,6 @@ static int mmc_blk_probe(struct mmc_card *card)
 #endif
 #if defined(CONFIG_MMC_DW_ROCKCHIP)
     if(card->host->restrict_caps & RESTRICT_CARD_TYPE_EMMC){
-        this_card = card;
         md->disk->emmc_disk = 1;
     }else {
         md->disk->emmc_disk = 0;
@@ -2453,10 +2460,6 @@ static void mmc_blk_remove(struct mmc_card *card)
 {
 	struct mmc_blk_data *md = mmc_get_drvdata(card);
 	
-#if defined(CONFIG_MMC_DW_ROCKCHIP)
-    if(card->host->restrict_caps & RESTRICT_CARD_TYPE_EMMC)
-        this_card = NULL;
-#endif
 	mmc_blk_remove_parts(card, md);
 	pm_runtime_get_sync(&card->dev);
 	mmc_claim_host(card->host);

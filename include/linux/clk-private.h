@@ -24,6 +24,7 @@
  */
 
 #ifdef CONFIG_COMMON_CLK
+/***    private data structures    ***/
 
 struct clk {
 	const char		*name;
@@ -35,12 +36,17 @@ struct clk {
 	u8			num_parents;
 	u8			new_parent_index;
 	unsigned long		rate;
+	unsigned long		req_rate;
 	unsigned long		new_rate;
 	struct clk		*new_parent;
 	struct clk		*new_child;
 	unsigned long		flags;
 	unsigned int		enable_count;
 	unsigned int		prepare_count;
+	unsigned long		min_rate;
+	unsigned long		max_rate;
+	unsigned long		accuracy;
+	int			phase;
 	struct hlist_head	children;
 	struct hlist_node	child_node;
 	unsigned int		notifier_count;

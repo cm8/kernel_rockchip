@@ -72,6 +72,9 @@ static inline int irq_to_gpio(unsigned int irq)
 	return -EINVAL;
 }
 
+extern struct gpio_desc *gpio_to_desc(unsigned gpio);
+extern int desc_to_gpio(const struct gpio_desc *desc);
+
 #endif /* ! CONFIG_ARCH_HAVE_CUSTOM_GPIO_H */
 
 #else /* ! CONFIG_GPIOLIB */
