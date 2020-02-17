@@ -4,7 +4,7 @@ it may be deleted from github at any time in the future.
 See https://github.com/cm8/linux repo for which the steps
 outlined below have already been performed.
 
- mainline kernel
+ mainline kernel plus
  + mmind/linux-rockchip/tree/wip/rk3188-lcdc/drivers/gpu/drm/bridge/ite
  + mmind/linux-rockchip/blob/wip/rk3188-lcdc/arch/arm/boot/dts/rk3188-radxarock.dts
  
@@ -22,4 +22,4 @@ outlined below have already been performed.
 
 If you don't want to clone the whole repo, you can find
 tarballs reflecting official kernel versions supplemented
-by it66121 code using https://github.com/cm8/linux/releases
+by it66121 code using https://github.com/cm8/linux/releases.
